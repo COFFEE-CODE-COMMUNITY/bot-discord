@@ -1,0 +1,41 @@
+import { Events } from "discord.js";
+import { handleSlash } from "../interactions/slash/slashHandler.js";
+import { handleModal } from "../interactions/modal/index.js";
+import { handleButton } from "../interactions/button/index.js";
+import { AppError } from "../error/appError.js";
+import { handleSelect } from "../interactions/select/index.js";
+
+export default {
+    name : Events.InteractionCreate,
+    async execute (interaction) {
+        try {
+            if(interaction.isChatInputCommand()) {
+                await handleSlash(interaction);
+            }
+            if (interaction.isButton()) {
+                await handleButton(interaction);
+            }
+    
+            if (interaction.isModalSubmit()) {
+                await handleModal(interaction);
+            }
+
+            if (interaction.isUserSelectMenu()) {
+                await handleSelect(interaction);
+            }
+            
+        } catch (error) {
+            console.error(error);
+            if (error instanceof AppError) {
+                return interaction.reply({
+                content: error.message,
+                ephemeral: true
+            });
+            }
+            return interaction.reply({
+                content: 'Terjadi kesalahan internal, coba lagi nanti',
+                ephemeral: true
+            });
+        }
+    }
+};
