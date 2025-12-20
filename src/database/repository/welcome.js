@@ -7,13 +7,13 @@ const saveConfig = async ({
 }) => {
   const query = {
     text: `INSERT INTO welcome_config (guild_id, channel_id, status)
-           VALUES ($1, $2, $1) ON CONFLICT (guild_id) DO UPDATE SET channel_id = EXCLUDED.channel_id, status = EXCLUDED.status;`,
+           VALUES ($1, $2, $3) ON CONFLICT (guild_id) DO UPDATE SET channel_id = EXCLUDED.channel_id, status = EXCLUDED.status;`,
     values: [guildId, channelId, status]
   };
   await pool.query(query);
 };
 
-const getAll = async () => {
+const getWelcome = async () => {
   const query = {
     text: `SELECT * FROM welcome_config`,
   };
@@ -32,5 +32,5 @@ const turnOff = async ({guildId}) => {
 export {
   saveConfig,
   turnOff,
-  getAll,
+  getWelcome,
 };

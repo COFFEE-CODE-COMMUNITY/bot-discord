@@ -36,24 +36,34 @@ export default {
       });
     }
 
-    const guildId = interaction.guildId;
+    const guildId = interaction.guild.id;
 
     const options = interaction.options.getSubcommand();
     switch (options) {
       case "turn-on":
+        await interaction.deferReply({
+          content: "Permintaan Sedang Diproses...",
+          ephemeral: true,
+        });
         const targetChannel = interaction.options.getChannel("channel");
         const status = true;
+        const channelId = targetChannel.id;
 
-        await setupWelcome({guildId, targetChannel, status});
+        await setupWelcome({guildId, channelId, status});
 
-        return interaction.reply({
+        return interaction.editReply({
           content: `Setup Telah Dibuat Di Channel ${targetChannel.name}`,
           ephemeral: true,
         });
       case "turn-off":
+        await interaction.deferReply({
+          content: "Permintaan Sedang Diproses...",
+          ephemeral: true,
+        });
+
         await deleteWelcome({guildId});
 
-        return interaction.reply({
+        return interaction.editReply({
           content: `Setup Telah Dihapus`,
           ephemeral: true,
         });

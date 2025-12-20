@@ -1,5 +1,5 @@
 import { AppError } from "../error/appError.js";
-import { getAll, saveConfig, turnOff } from "../database/repository/welcome.js";
+import { getWelcome, saveConfig, turnOff } from "../database/repository/welcome.js";
 
 const setupWelcome = async ({
   guildId,
@@ -18,8 +18,8 @@ const statusWelcome = async ({ guildId }) => {
     throw new AppError('Server tidak terdaftar');
   }
 
-  const result = await getAll();
-  return result.status ?? false;
+  const result = await getWelcome();
+  return result?.status ?? false;
 };
 
 const deleteWelcome = async ({ guildId }) => {

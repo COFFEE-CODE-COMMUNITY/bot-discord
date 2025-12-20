@@ -1,13 +1,17 @@
 import {Events} from "discord.js";
-import {welcome} from "./guild-member-add/welcome.js";
-import {inviteTracker} from "./guild-member-add/inviteTracker.js";
+import {welcome} from "../context/guildMembers/welcome.js";
+import {inviteTracker} from "../context/guildMembers/inviteTracker.js";
 
 export default {
   name: Events.GuildMemberAdd,
   async execute(member) {
     if (!member) return;
 
-    await welcome({member});
+    try {
+      await welcome({member});
+    } catch (e) {
+      console.error(e);
+    }
     await inviteTracker({member});
   }
 };

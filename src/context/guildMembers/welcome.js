@@ -1,11 +1,21 @@
-import {getAll} from "../../database/repository/welcome.js";
+import {getWelcome} from "../../database/repository/welcome.js";
 import {AttachmentBuilder, EmbedBuilder, TextChannel} from "discord.js";
 import {createCanvas, loadImage} from "canvas";
+import {fileURLToPath} from "url";
+import path from "path";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const backgroundPath = path.resolve(
+  __dirname,
+  "../../../public/welcome-banner.png"
+);
 
 const welcome = async ({ member }) => {
   const guild = member.guild;
 
-  const data = await getAll();
+  const data = await getWelcome();
   if (!data) return;
 
   const channel = guild.channels.cache.get(data.channel_id);
@@ -23,10 +33,10 @@ const welcomeEmbed = async ({member}) => {
   const user = member.user;
   const guild = member.guild;
 
-  const size = [1200, 400];
+  const size = [1920, 1080];
   const canvas = createCanvas(size[0], size[1]);
   const ctx = canvas.getContext('2d');
-  const background = await loadImage("./public/welcome-banner.png");
+  const background = await loadImage(backgroundPath);
   ctx.drawImage(background, 0, 0, size[0], size[1]);
 
   const avatar = await loadImage(
@@ -36,36 +46,50 @@ const welcomeEmbed = async ({member}) => {
     })
   );
 
-  const avatarSize = {size: 180, x: 60, y: (size[0] - 180) / 2};
+  const avatarSize = 180;
+
+  const avatarX = (size[0] - avatarSize) / 2;
+  const avatarY = (size[1] - avatarSize) / 2 - 150;
+
 
   ctx.save();
   ctx.beginPath();
   ctx.arc(
-    avatarSize.x + avatarSize.size / 2,
-    avatarSize.y + avatarSize.size / 2,
-    avatarSize.size / 2,
+    avatarX + avatarSize / 2,
+    avatarY + avatarSize / 2,
+    avatarSize / 2,
     0,
-    Math.PI * 2,
+    Math.PI * 2
   );
   ctx.closePath();
   ctx.clip();
-  ctx.drawImage(avatar, avatarSize.x, avatarSize.y, avatarSize.size, avatarSize.size);
+
+  ctx.drawImage(
+    avatar,
+    avatarX,
+    avatarY,
+    avatarSize,
+    avatarSize
+  );
   ctx.restore();
 
-  ctx.fillStyle = '#ffffff';
-  ctx.font = 'bold 48px Sans';
+  ctx.fillStyle = '#236EA8';
+  ctx.textAlign = 'center';
+
+  ctx.font = 'bold 78px Sans';
   ctx.fillText(
     `WELCOME, ${member.user.username.toUpperCase()}`,
-    280,
-    190
+    size[0] / 2,
+    avatarY + avatarSize + 110
   );
 
-  ctx.font = '28px Sans';
+  ctx.font = 'bold 34px Sans';
   ctx.fillText(
-    `Selamat datang di ${guild.name}`,
-    280,
-    240
+    `Brew Ideas, Code Hard, Chill Together`,
+    size[0] / 2,
+    avatarY + avatarSize + 165
   );
+
 
   const attachment = new AttachmentBuilder(canvas.toBuffer("image/png"), {
     name: "welcome.png",

@@ -1,6 +1,6 @@
 import { AppError } from "../error/appError.js";
 import { saveConfig, turnOff } from "../database/repository/inviteTracker.js";
-import {getAll} from "../database/repository/welcome.js";
+import {getInvite} from "../database/repository/inviteTracker.js";
 
 const setupInvite = async ({
   guildId,
@@ -19,8 +19,8 @@ const statusInvite = async ({ guildId }) => {
     throw new AppError('Server tidak terdaftar');
   }
 
-  const result = await getAll();
-  return result.status ?? false;
+  const result = await getInvite();
+  return result?.status ?? false;
 };
 
 const deleteInvite = async ({ guildId }) => {

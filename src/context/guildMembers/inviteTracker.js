@@ -1,4 +1,4 @@
-import { getAll } from "../../database/repository/inviteTracker.js";
+import { getInvite } from "../../database/repository/inviteTracker.js";
 import { EmbedBuilder } from "discord.js";
 import { client } from "../../client/client.js";
 
@@ -8,7 +8,7 @@ const inviteTracker = async ({ member }) => {
   const guild = member.guild;
   if (!guild) return;
 
-  const data = await getAll();
+  const data = await getInvite();
   if (!data) return;
 
   const channel = guild.channels.cache.get(data.channel_id);
