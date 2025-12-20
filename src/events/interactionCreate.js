@@ -1,9 +1,9 @@
 import { Events } from "discord.js";
-import { handleSlash } from "../interactions/slash/slashHandler.js";
-import { handleModal } from "../interactions/modal/index.js";
-import { handleButton } from "../interactions/button/index.js";
+import { handleSlash } from "../context/interactions/slash/slashHandler.js";
+import { handleModal } from "../context/interactions/modal/index.js";
+import { handleButton } from "../context/interactions/button/index.js";
 import { AppError } from "../error/appError.js";
-import { handleSelect } from "../interactions/select/index.js";
+import { handleSelect } from "../context/interactions/select/index.js";
 
 export default {
     name : Events.InteractionCreate,

@@ -1,5 +1,5 @@
 import { EmbedBuilder } from "discord.js";
-import { getTargetChannelFeedback } from "../../services/feedback.js";
+import { getTargetChannelFeedback } from "../../../services/feedback.js";
 
 const handleFeedbackModal = async (interaction) => {
     await interaction.deferReply({
