@@ -1,6 +1,6 @@
 import { Events } from "discord.js";
 import { registerCommands } from "../services/registerCommand.js";
-import { initInvite } from "../utils/inviteCache.js";
+import { initInvite } from "./guild-member-add/inviteTracker.js";
 import { client } from "../client/client.js";
 
 export default {
