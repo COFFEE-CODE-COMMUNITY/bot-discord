@@ -1,4 +1,6 @@
 import { PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
+import { handleBoosterSetup } from "../context/interactions/slash/booster.js";
+import { handleBooster } from "../context/memberUpdate/booster.js";
 
 export default {
   data: new SlashCommandBuilder()
@@ -41,8 +43,17 @@ export default {
 
     switch (sub) {
       case "setup":
-        return;
-        // return handleBoosterSetup(interaction);
+        return handleBoosterSetup(interaction);
+      case "test":
+        await interaction.deferReply({
+            ephemeral: true,
+        });
+        await handleBooster(interaction.member, interaction.member);
+
+        return interaction.editReply({
+            content: "succes test booster",
+            ephemeral: true,
+        });
       default:
         return await interaction.reply({
           content: "command tidak valid",
