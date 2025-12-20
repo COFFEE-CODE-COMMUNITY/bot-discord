@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { client } from '../client/client.js';
-import { fileURLToPath } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
 import { Collection } from 'discord.js';
 
 client.commands = new Collection();
@@ -14,7 +14,8 @@ const commandFiles = fs.readdirSync(commandsPath).filter(f => f.endsWith('.js'))
 
 for (const file of commandFiles){
     const filePath = path.join(commandsPath, file);
-    const command = (await import(filePath)).default;
+    const fileUrl = pathToFileURL(filePath).href;
+    const command = (await import(fileUrl)).default;
     if('data' in command && 'execute' in command) {
         client.commands.set(command.data.name, command);
     } else {
