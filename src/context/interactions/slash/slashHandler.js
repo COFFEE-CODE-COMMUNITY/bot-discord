@@ -1,5 +1,5 @@
 async function handleSlash(interaction) {
-    console.log(interaction.client.commands);
+    // console.log(interaction.client.commands);
     const command = interaction.client.commands.get(interaction.commandName);
 
     if(!command) {

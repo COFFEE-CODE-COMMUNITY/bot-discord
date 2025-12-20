@@ -48,14 +48,19 @@ export default {
             });
         }
 
+        if(!interaction.memberPermissions.has(PermissionFlagsBits.Administrator)) {
+            return interaction.reply({
+                content: 'Command ini hanya bisa digunakan oleh **Administrator**.',
+                ephemeral: true
+            });
+        }
+
         const panelChannel = interaction.options.getChannel('panel');
         const suggestionChannel = interaction.options.getChannel('suggestion');
         const reportChannel = interaction.options.getChannel('report');
         const bugChannel = interaction.options.getChannel('bug');
 
-
         await setupFeedback({guildId: interaction.guildId, panelChannelId: panelChannel.id, suggestionChannelId: suggestionChannel.id, reportChannelId:reportChannel.id, bugChannelId: bugChannel.id });
-
 
         if(!panelChannel.isTextBased()) {
             return interaction.reply({
