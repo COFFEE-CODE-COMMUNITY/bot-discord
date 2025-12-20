@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { REST, Routes } from 'discord.js';
-import { fileURLToPath } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
 import { config } from '../config/config.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -12,7 +12,9 @@ const registerCommands = async () => {
     const commandPath = path.join(__dirname, '../commands');
     const commandFiles = fs.readdirSync(commandPath).filter(f => f.endsWith('.js'));
     for (const file of commandFiles) {
-        const command = (await import(path.join(commandPath, file))).default;
+        const filePath = path.join(commandPath, file);
+        const fileUrl = pathToFileURL(filePath).href;
+        const command = (await import(fileUrl)).default;
         commands.push(command.data.toJSON());
     }
 
