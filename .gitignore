@@ -134,3 +134,6 @@ dist
 # IDE and editor directories
 .idea
 .vscode
+
+catatan.js
+.env.catatan
