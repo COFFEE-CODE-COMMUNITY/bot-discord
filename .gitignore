@@ -136,3 +136,4 @@ dist
 .vscode
 
 catatan.js
+.env.catatan
