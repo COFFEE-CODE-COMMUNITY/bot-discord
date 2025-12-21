@@ -9,7 +9,17 @@ const setupBoosterRepository = async (guildId, channelId) => {
     await pool.query(query);
 };
 
+const getBoosterChannelRepository = async (guildId) => {
+    const query = {
+        text: `SELECT channel_id FROM booster_config WHERE guild_id = $1`,
+        values: [guildId]
+    };
+
+    const result = await pool.query(query);
+    return result.rows[0];
+};
 
 export {
-    setupBoosterRepository
+    setupBoosterRepository,
+    getBoosterChannelRepository
 };
