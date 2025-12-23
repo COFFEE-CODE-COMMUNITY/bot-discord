@@ -51,16 +51,6 @@ const deleteEmbedById= async ({ id }) => {
   await pool.query(query);
 };
 
-const findEmbedByMessageId = async ({ guildId, messageId }) => {
-  const query = {
-    text:`SELECT * FROM take_role_embed_config WHERE guild_id = $1 AND message_id = $2`,
-    values: [guildId, messageId]
-  };
-  const { rows } = await pool.query(query);
-
-  return rows[0];
-};
-
 const createManyItem = async ({ items }) => {
   const queries = items.map((item) =>
     pool.query(
@@ -104,6 +94,48 @@ const findEmbedById = async ({ embedId }) => {
   return rows;
 };
 
+const findAllById = async ({ embedId }) => {
+  const query = {
+    text: `
+      SELECT 
+        e.id AS embed_id, e.guild_id, e.channel_id, e.message_id, e.title, e.description, e.color, e.footer,
+        i.id AS item_id, i.role_id, i.label, i.emoji, i.style, i.value, i.custom_id, i.position
+      FROM take_role_embed_config e
+      LEFT JOIN take_role_item_config i ON e.id = i.embed_id WHERE e.id = $1 ORDER BY i.position ASC
+    `,
+    values: [embedId]
+  };
+
+  const { rows } = await pool.query(query);
+
+  if (rows.length === 0) return null;
+
+  const { embed_id, guild_id, channel_id, message_id, title, description, color, footer } = rows[0];
+  const items = rows.map(r => ({
+    id: r.item_id,
+    role_id: r.role_id,
+    label: r.label,
+    emoji: r.emoji,
+    style: r.style,
+    value: r.value,
+    custom_id: r.custom_id,
+    position: r.position,
+  }));
+
+  return {
+    id: embed_id,
+    guild_id,
+    channel_id,
+    message_id,
+    title,
+    description,
+    color,
+    footer,
+    items,
+  };
+};
+
+
 const findAllEmbedByGuildId = async ({ guildId }) => {
   const query = {
     text: `SELECT id, title, channel_id, message_id FROM take_role_embed_config WHERE guild_id = $1 ORDER BY id DESC`,
@@ -117,9 +149,9 @@ const findAllEmbedByGuildId = async ({ guildId }) => {
 export {
   createEmbed,
   deleteEmbedById,
-  findEmbedByMessageId,
   updateEmbedMessageId,
   findEmbedById,
   createManyItem,
   findAllEmbedByGuildId,
+  findAllById,
 };

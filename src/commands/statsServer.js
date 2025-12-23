@@ -6,7 +6,6 @@ import {
   PermissionFlagsBits,
   SlashCommandBuilder, StringSelectMenuBuilder
 } from "discord.js";
-import {ButtonBuilder} from "@discordjs/builders";
 import {statData} from "../context/memberUpdate/statsServer.js";
 import {getCategoryByGuildId} from "../services/statsServer.js";
 
@@ -23,13 +22,6 @@ export default {
       sub
         .setName("delete")
         .setDescription("Delete selected category")
-        .addChannelOption(opt =>
-          opt
-            .setName("category")
-            .setDescription("Delete this category")
-            .setRequired(true)
-            .addChannelTypes(ChannelType.GuildCategory)
-        )
     ),
   permissions: PermissionFlagsBits.Administrator,
   async execute(interaction) {
@@ -79,7 +71,7 @@ export default {
           ephemeral: true,
         });
       case "delete": {
-        const categories = await getCategoryByGuildId(guildId);
+        const categories = await getCategoryByGuildId({guildId});
 
         if (!categories.length) {
           return interaction.reply({

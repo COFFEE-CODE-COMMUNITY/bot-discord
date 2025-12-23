@@ -1,7 +1,6 @@
 import {
   createEmbed,
   createManyItem,
-  deleteEmbedById,
   findEmbedById,
   updateEmbedMessageId
 } from "../database/repository/takeRole.js";
@@ -17,38 +16,27 @@ const createTakeRole = async ({
   embed,
   items,
 }) => {
-  if (!items || items.length === 0) {
-    throw new Error('Take role harus memiliki minimal 1 role');
-  }
-
-  const embedConfig = await createEmbed({
+  const embedResult = await createEmbed({
     guildId,
     channelId,
     interactionType,
     ...embed,
   });
 
-  const itemPayload = items.map((item, index) => ({
-    embedId: embedConfig.id,
-    roleId: item.roleId,
-    label: item.label,
-    emoji: item.emoji,
-    style: interactionType === 'button' ? item.style : null,
-    value:
-      interactionType === 'select'
-        ? `take-role-item:${embedConfig.id}:${index}`
-        : null,
-    customId: `take-role-item:${embedConfig.id}:${index}`,
+  const mappedItems = [...items.values()].map((role, index) => ({
+    embedId: embedResult.id,
+    roleId: role.id,
+    label: role.name,
+    emoji: null,
+    style: null,
+    value: role.id,
+    customId: `take-role-item:${embedResult.id}:${role.id}`,
     position: index,
   }));
 
-  await createManyItem(itemPayload);
+  await createManyItem({ items: mappedItems });
 
-  return embedConfig;
-};
-
-const deleteTakeRoleById = async (embedId) => {
-  await deleteEmbedById(embedId);
+  return embedResult;
 };
 
 const buildTakeRoleMessage = ({ embed, items, interactionType }) => {
@@ -68,10 +56,12 @@ const buildTakeRoleMessage = ({ embed, items, interactionType }) => {
       .addOptions(
         items.map(item => ({
           label: item.label ?? "Role",
-          value: item.custom_id,
+          value: item.role_id,
           emoji: item.emoji ?? undefined,
         }))
-      );
+      )
+      .setMinValues(0)
+      .setMaxValues(items.length);
 
     components.push(
       new ActionRowBuilder().addComponents(select)
@@ -82,13 +72,14 @@ const buildTakeRoleMessage = ({ embed, items, interactionType }) => {
     const row = new ActionRowBuilder();
 
     for (const item of items) {
-      row.addComponents(
-        new ButtonBuilder()
-          .setCustomId(item.custom_id)
-          .setLabel(item.label ?? "Role")
-          .setStyle(item.style ?? ButtonStyle.Secondary)
-          .setEmoji(item.emoji ?? undefined)
-      );
+      const button = new ButtonBuilder()
+        .setCustomId(item.custom_id)
+        .setLabel(item.label ?? "Role")
+        .setStyle(item.style ?? ButtonStyle.Secondary);
+
+      if (item.emoji) button.setEmoji(item.emoji);
+
+      row.addComponents(button);
     }
 
     components.push(row);
@@ -136,24 +127,25 @@ const handleTakeRoleSelectMenu = async (interaction) => {
   const member = interaction.member;
 
   const items = await findEmbedById({ embedId });
+  const allowedRoleIds = new Set(items.map(i => i.role_id));
 
-  for (const item of items) {
-    const hasRole = member.roles.cache.has(item.role_id);
-    const selected = interaction.values.includes(item.custom_id);
+  for (const roleId of interaction.values) {
+    if (!allowedRoleIds.has(roleId)) continue;
 
-    if (selected && !hasRole) {
-      await member.roles.add(item.role_id);
-    }
-
-    if (!selected && hasRole) {
-      await member.roles.remove(item.role_id);
+    if (member.roles.cache.has(roleId)) {
+      await member.roles.remove(roleId);
+      await interaction.reply({
+        content: "Role berhasil dihapus.",
+        ephemeral: true,
+      });
+    } else {
+      await member.roles.add(roleId);
+      await interaction.reply({
+        content: "Role berhasil ditambahkan.",
+        ephemeral: true,
+      });
     }
   }
-
-  await interaction.reply({
-    content: "Role kamu berhasil diperbarui.",
-    ephemeral: true,
-  });
 };
 
 const handleTakeRoleButton = async (interaction) => {
@@ -185,7 +177,6 @@ const handleTakeRoleButton = async (interaction) => {
 
 export {
   createTakeRole,
-  deleteTakeRoleById,
   takeRoleState,
   buildTakeRoleMessage,
   sendTakeRoleEmbed,

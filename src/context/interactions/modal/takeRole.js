@@ -6,7 +6,6 @@ const handleTakeRoleModal = async (interaction) => {
   if (interaction.customId !== "take-role-modal:embed") return;
 
   const state = takeRoleState.get(interaction.user.id);
-
   if (!state) {
     return interaction.reply({
       content: "Data role tidak ditemukan. Silakan ulangi proses.",

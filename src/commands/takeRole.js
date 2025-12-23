@@ -16,6 +16,13 @@ export default {
       sub
         .setName("create")
         .setDescription("Create new custom embed role")
+        .addChannelOption(option =>
+          option
+            .setName("channel")
+            .setDescription("Set The Channel For Welcome")
+            .addChannelTypes(ChannelType.GuildText)
+            .setRequired(true)
+        )
     )
     .addSubcommand( sub =>
       sub
@@ -37,6 +44,7 @@ export default {
     switch (options) {
       case "create":
         const roles = interaction.guild.roles.cache.filter(role => role.name.includes("C3"));
+        const {id} = interaction.options.getChannel("channel");
 
         const listRoles = new ActionRowBuilder().addComponents(
           new StringSelectMenuBuilder()
@@ -57,7 +65,9 @@ export default {
           .setColor(3447003);
 
         takeRoleState.set(interaction.user.id, {
-          roles,
+          guildId: guildId,
+          channelId: id,
+          roles: null,
           createdAt: Date.now(),
         });
 
@@ -80,12 +90,12 @@ export default {
           .setCustomId("take-role-delete:select")
           .setPlaceholder("Pilih embed yang akan dihapus")
           .setMinValues(1)
-          .setMaxValues(1)
+          .setMaxValues(embeds.length)
           .addOptions(
             embeds.map(embed => ({
               label: embed.title || `Embed #${embed.id}`,
               description: `Channel ID: ${embed.channel_id}`,
-              value: embed.id,
+              value: String(embed.id),
             }))
           );
 

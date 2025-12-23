@@ -1,13 +1,13 @@
 import {ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle} from "discord.js";
-import {deleteEmbedById, findEmbedById} from "../../../database/repository/takeRole.js";
+import {deleteEmbedById, findAllById, findEmbedById} from "../../../database/repository/takeRole.js";
 import {client} from "../../../client/client.js";
+import {takeRoleState} from "../../../services/takeRole.js";
 
 const handleTakeRoleSelect = async (interaction) => {
-  if (!interaction.isRoleSelectMenu()) return;
+  if (!interaction.isStringSelectMenu()) return;
+  if (interaction.customId.split(":")[0] !== "take-role-select") return;
 
-  const [prefix, action] = interaction.customId.split(":");
-  if (prefix !== "take-role-select") return;
-  if (action !== "roles") return;
+  const request = takeRoleState.get(interaction.user.id);
 
   const roles = interaction.values;
   if (!roles || roles.length === 0) {
@@ -16,6 +16,9 @@ const handleTakeRoleSelect = async (interaction) => {
       ephemeral: true,
     });
   }
+
+  request.roles = roles
+    .map(roleId => interaction.guild.roles.cache.get(roleId));
 
   const modal = new ModalBuilder()
     .setCustomId(`take-role-modal:embed`)
@@ -71,9 +74,9 @@ const handleTakeRoleDeleteSelect = async (interaction) => {
   if (!interaction.isStringSelectMenu()) return;
   if (interaction.customId !== "take-role-delete:select") return;
 
-  const embedId = interaction.values[0];
+  const embedId = Number(interaction.values[0]);
 
-  const embed = await findEmbedById({ id: embedId });
+  const embed = await findAllById({ embedId: embedId });
   if (!embed) {
     return interaction.reply({
       content: "Embed tidak ditemukan di database.",
