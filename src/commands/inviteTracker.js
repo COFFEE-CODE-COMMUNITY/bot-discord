@@ -52,7 +52,7 @@ export default {
 
         await setupInvite({guildId, channelId, status});
 
-        return interaction.reply({
+        return interaction.editReply({
           content: `Setup telah dibuat di channel ${targetChannel.name}`,
           ephemeral: true,
         });
