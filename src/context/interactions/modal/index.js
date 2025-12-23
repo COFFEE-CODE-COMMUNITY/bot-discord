@@ -1,4 +1,6 @@
 import { handleFeedbackModal } from "./feedback.js";
+import {handleStatModal} from "./statsServer.js";
+import {handleTakeRoleModal} from "./takeRole.js";
 
 const handleModal = async (interaction) => {
     const [domain] = interaction.customId.split(':');
@@ -6,6 +8,10 @@ const handleModal = async (interaction) => {
     switch (domain){
         case 'feedback-modal':
             return handleFeedbackModal(interaction);
+        case 'stats-server-modal':
+            return handleStatModal(interaction);
+        case 'take-role-modal':
+            return handleTakeRoleModal(interaction);
         default:
             await interaction.reply({
                 content: 'Modal tidak dikenali',

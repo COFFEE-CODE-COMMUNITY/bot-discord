@@ -9,10 +9,10 @@ export default {
 
     try {
       await welcome({member});
+      await inviteTracker({member});
     } catch (e) {
       console.error(e);
     }
-    await inviteTracker({member});
   }
 };
 
