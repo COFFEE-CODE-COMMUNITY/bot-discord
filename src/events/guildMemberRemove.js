@@ -1,16 +1,12 @@
 import {Events} from "discord.js";
-import {welcome} from "../context/guildMembers/welcome.js";
-import {inviteTracker} from "../context/guildMembers/inviteTracker.js";
 import {renameChannel} from "../context/memberUpdate/statsServer.js";
 
 export default {
-  name: Events.GuildMemberAdd,
+  name: Events.GuildMemberRemove,
   async execute(member) {
     if (!member) return;
 
     try {
-      await welcome({member});
-      await inviteTracker({member});
       await renameChannel({member});
     } catch (e) {
       console.error(e);

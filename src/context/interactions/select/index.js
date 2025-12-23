@@ -6,6 +6,7 @@ const handleSelect = async (interaction) => {
     switch(domain) {
         case 'feedback-select':
             return handleFeedbackSelect(interaction);
+
         default:
             await interaction.reply({
                 content: 'Select tidak dikenali',

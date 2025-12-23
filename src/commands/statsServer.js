@@ -7,6 +7,8 @@ import {
   SlashCommandBuilder, StringSelectMenuBuilder
 } from "discord.js";
 import {ButtonBuilder} from "@discordjs/builders";
+import {statData} from "../context/memberUpdate/statsServer.js";
+import {getCategoryByGuildId} from "../services/statsServer.js";
 
 export default {
   data: new SlashCommandBuilder()
@@ -41,19 +43,16 @@ export default {
     const guildId = interaction.guild.id;
     const options = interaction.options.getSubcommand();
 
-    const buttonRow = new ActionRowBuilder().addComponents(
-      new ButtonBuilder()
-        .setCustomId("stats-server-btn:next")
-        .setLabel("Next")
-        .setStyle(ButtonStyle.Primary),
-      new ButtonBuilder()
-        .setCustomId("stats-server-btn:cancel")
-        .setLabel("Cancel")
-        .setStyle(ButtonStyle.Secondary),
-    );
-
     switch (options) {
       case "create":
+        statData.set(interaction.user.id, {
+          guildId: guildId,
+          roles: [],
+          categoryName: "",
+          discordCategoryId: null,
+          channels: []
+        });
+
         const roles = interaction.guild.roles.cache.filter(role => role.name.includes("C3"));
 
         const listRoles = new ActionRowBuilder().addComponents(
@@ -76,11 +75,50 @@ export default {
 
         return await interaction.reply({
           embeds: [embed],
-          components: [listRoles, buttonRow],
+          components: [listRoles],
           ephemeral: true,
         });
-      case "delete":
-        break;
+      case "delete": {
+        const categories = await getCategoryByGuildId(guildId);
+
+        if (!categories.length) {
+          return interaction.reply({
+            content: "Tidak ada stats category yang bisa dihapus",
+            ephemeral: true,
+          });
+        }
+
+        const options = categories
+          .map(catId => {
+            const channel = interaction.guild.channels.cache.get(catId);
+            if (!channel) return null;
+
+            return {
+              label: channel.name,
+              value: channel.id,
+              description: `Category ID: ${channel.id}`,
+            };
+          })
+          .filter(Boolean);
+
+        const row = new ActionRowBuilder().addComponents(
+          new StringSelectMenuBuilder()
+            .setCustomId("stats-server-delete:category")
+            .setPlaceholder("Pilih category stats")
+            .addOptions(options)
+        );
+
+        const embed = new EmbedBuilder()
+          .setTitle("Delete Stats Server")
+          .setDescription("Pilih category stats yang ingin dihapus")
+          .setColor(0xED4245);
+
+        return interaction.reply({
+          embeds: [embed],
+          components: [row],
+          ephemeral: true,
+        });
+      }
     }
   }
 };

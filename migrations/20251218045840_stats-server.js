@@ -11,9 +11,17 @@ export const shorthands = undefined;
 
 export const up = (pgm) => {
   pgm.createTable('stats_config', {
-    guild_id: { type: 'VARCHAR(255)', primaryKey: true, notNull: true },
-    role_ids: { type: 'TEXT[]', notNull: true },
-  })
+    id: 'id',
+    guild_id: { type: 'VARCHAR(255)', notNull: true },
+    role_id: { type: 'VARCHAR(255)', notNull: true },
+    channel_id: { type: 'VARCHAR(255)', notNull: true, unique: true },
+    discord_category: { type: 'VARCHAR(255)', notNull: true },
+  });
+
+  pgm.addConstraint('stats_config', 'unique_guild_role', {
+    unique: ['guild_id', 'role_id'],
+  });
+
 };
 
 /**

@@ -4,6 +4,7 @@ import { handleModal } from "../context/interactions/modal/index.js";
 import { handleButton } from "../context/interactions/button/index.js";
 import { AppError } from "../error/appError.js";
 import { handleSelect } from "../context/interactions/select/index.js";
+import {handleStringSelect} from "../context/interactions/string-select/index.js";
 
 export default {
     name : Events.InteractionCreate,
@@ -22,6 +23,10 @@ export default {
 
             if (interaction.isUserSelectMenu()) {
                 await handleSelect(interaction);
+            }
+
+            if (interaction.isStringSelectMenu()) {
+                await handleStringSelect(interaction);
             }
             
         } catch (error) {
