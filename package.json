@@ -9,7 +9,9 @@
     "dev": "nodemon src/index.js",
     "migrate": "node-pg-migrate up",
     "migrate:down": "node-pg-migrate down",
-    "migrate:create": "node-pg-migrate create"
+    "migrate:create": "node-pg-migrate create",
+    "seed": "node src/database/seed.js",
+    "truncate": "node src/database/truncate.js"
   },
   "author": "",
   "license": "ISC",

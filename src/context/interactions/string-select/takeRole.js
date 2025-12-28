@@ -1,5 +1,5 @@
 import {ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle} from "discord.js";
-import {deleteEmbedById, findAllById, findEmbedById} from "../../../database/repository/takeRole.js";
+import {deleteEmbedById, findAllById} from "../../../database/repository/takeRole.js";
 import {client} from "../../../client/client.js";
 import {takeRoleState} from "../../../services/takeRole.js";
 

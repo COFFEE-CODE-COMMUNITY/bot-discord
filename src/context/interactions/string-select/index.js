@@ -1,6 +1,7 @@
 import {handleStatsServerDelete, handleStatsServerSelect} from "./statsServer.js";
 import {handleTakeRoleDeleteSelect, handleTakeRoleSelect} from "./takeRole.js";
 import {handleTakeRoleSelectMenu} from "../../../services/takeRole.js";
+import {handleHelpSelect} from "./help.js";
 
 const handleStringSelect = async (interaction) => {
   const [domain] = interaction.customId.split(':');
@@ -16,6 +17,8 @@ const handleStringSelect = async (interaction) => {
       return handleTakeRoleSelectMenu(interaction);
     case "take-role-delete":
       return handleTakeRoleDeleteSelect(interaction);
+    case "help-select":
+      return handleHelpSelect(interaction);
     default:
       await interaction.reply({
         content: 'String Select tidak dikenali',
